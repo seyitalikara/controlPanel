@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<?php
+    include 'db_functions.php';
+?>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SCADA Control Panel</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div id="datetime-overlay"></div>
+    <div class="container">
+        <header class="header">
+            <h1>SCADA Kontrol Paneli</h1>
+            <span class="status-badge status-online">Sistem Aktif</span>
+            <button onclick="window.location.href='logout.php'" style="float: right; margin-top: -30px; background-color: #f44336; color: white; border: none; padding: 10px; border-radius: 4px; cursor: pointer;">
+                Çıkış Yap
+            </button>
+        </header>
+
+        <div class="data-card">
+            <div class="button-group">
+                <button onclick="refreshData()">
+                    <i class="fas fa-sync-alt"></i> Verileri Yenile
+                </button>
+                <button onclick="saveChanges()">
+                    <i class="fas fa-save"></i> Değişiklikleri Kaydet
+                </button>
+                <button onclick="window.location.href='data_add.php'">
+                    <i class="fas fa-plus"></i> Veri Ekle
+                </button>
+                <div id="target-element-id" style="margin-top: 1rem;">Veri durumu burada görünecek</div>
+            </div>
+
+            <div style="overflow-x: auto;">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Şube İsmi</th>
+                            <th>Mevcut Sıcaklık</th>
+                            <th>İstenilen Sıcaklık</th>
+                            <th>Aç/Kapat</th>
+                            <th>Tahmini Batarya Ömrü</th>
+                            <th>İşlemler</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <?php include 'get_data.php'; ?>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="button-group" style="margin-top: 1rem;">
+                <button onclick="exportData()">
+                    <i class="fas fa-file-export"></i> Verileri Dışa Aktar
+                </button>
+                <button onclick="showSettings()">
+                    <i class="fas fa-cog"></i> Ayarlar
+                </button>
+            </div>
+        </div>
+    </div>
+    
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="footer-section">
+                <span id="datetime"></span>
+            </div>
+            <div class="footer-section">
+                <a href="https://www.azrsolution.net" target="_blank">© 2023 AZR Solution</a>
+            </div>
+            <div class="footer-section">
+                <a href="contact.html">İletişim</a>
+            </div>
+        </div>
+    </footer>
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <script src="admin.js"></script>
+    <script>
+        function updateDateTime() {
+            const now = new Date();
+            const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit', second: '2-digit' };
+            document.getElementById('datetime').textContent = now.toLocaleDateString('tr-TR', options);
+            document.getElementById('datetime-overlay').textContent = now.toLocaleDateString('tr-TR', options);
+        }
+
+        setInterval(updateDateTime, 1000); // Update every second
+        updateDateTime(); // Initial call to set the date and time immediately
+    </script>
+</body>
+</html>

@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kullanıcı Paneli</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .dashboard {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .device-card {
+            background-color: white;
+            border-radius: 8px;
+            padding: 1.5rem;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .device-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .device-name {
+            font-weight: 600;
+            color: var(--text-color);
+            margin: 0;
+        }
+
+        .temperature-display {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--primary-color);
+            margin: 1rem 0;
+            text-align: center;
+        }
+
+        .temperature-controls {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 1rem;
+            margin: 1rem 0;
+        }
+
+        .control-button {
+            padding: 8px;
+            border-radius: 50%;
+            border: none;
+            background-color: var(--primary-color);
+            color: white;
+            cursor: pointer;
+            width: 36px;
+            height: 36px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+
+        .control-button:hover {
+            background-color: var(--secondary-color);
+            transform: scale(1.1);
+        }
+
+        .device-status {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.9rem;
+            color: var(--text-color);
+        }
+
+        .status-indicator {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+        }
+
+        .status-on {
+            background-color: var(--success-color);
+        }
+
+        .status-off {
+            background-color: var(--danger-color);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="dashboard">
+            <div class="device-card">
+                <div class="device-header">
+                    <h3 class="device-name">Salon Kliması</h3>
+                    <div class="device-status">
+                        <span class="status-indicator status-on"></span>
+                        Açık
+                    </div>
+                </div>
+                <div class="temperature-display">
+                    24°C
+                </div>
+                <div class="temperature-controls">
+                    <button class="control-button" onclick="adjustTemperature(-1)">
+                        <i class="fas fa-minus"></i>
+                    </button>
+                    <input type="number" value="24" min="16" max="30" readonly>
+                    <button class="control-button" onclick="adjustTemperature(1)">
+                        <i class="fas fa-plus"></i>
+                    </button>
+                </div>
+                <div class="button-group">
+                    <button onclick="togglePower()">
+                        <i class="fas fa-power-off"></i> Aç/Kapat
+                    </button>
+                    <button onclick="logout()">
+                        <i class="fas fa-sign-out-alt"></i> Çıkış Yap
+                    </button>
+                </div>
+            </div>
+
+            <!-- Additional device cards can be added here -->
+        </div>
+    </div>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <script>
+        let temperature = 24;
+        let isPowered = true;
+
+        function adjustTemperature(change) {
+            temperature = Math.min(Math.max(temperature + change, 16), 30);
+            document.querySelector('.temperature-display').textContent = `${temperature}°C`;
+            document.querySelector('input[type="number"]').value = temperature;
+        }
+
+        function togglePower() {
+            isPowered = !isPowered;
+            const statusIndicator = document.querySelector('.status-indicator');
+            const statusText = document.querySelector('.device-status');
+            
+            if (isPowered) {
+                statusIndicator.classList.remove('status-off');
+                statusIndicator.classList.add('status-on');
+                statusText.innerHTML = '<span class="status-indicator status-on"></span>Açık';
+            } else {
+                statusIndicator.classList.remove('status-on');
+                statusIndicator.classList.add('status-off');
+                statusText.innerHTML = '<span class="status-indicator status-off"></span>Kapalı';
+            }
+        }
+
+        function logout() {
+            window.location.href = 'logout.php';
+        }
+    </script>
+</body>
+</html>
