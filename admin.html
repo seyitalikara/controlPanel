@@ -15,50 +15,27 @@
         <header class="header">
             <h1>SCADA Kontrol Paneli</h1>
             <span class="status-badge status-online">Sistem Aktif</span>
-            <button onclick="window.location.href='logout.php'" style="float: right; margin-top: -30px; background-color: #f44336; color: white; border: none; padding: 10px; border-radius: 4px; cursor: pointer;">
-                Çıkış Yap
-            </button>
+            <button class="logout-button" onclick="window.location.href='logout.php'">Çıkış Yap</button>
         </header>
-
-        <div class="data-card">
-            <div class="button-group">
-                <button onclick="refreshData()">
-                    <i class="fas fa-sync-alt"></i> Verileri Yenile
-                </button>
-                <button onclick="saveChanges()">
-                    <i class="fas fa-save"></i> Değişiklikleri Kaydet
-                </button>
-                <button onclick="window.location.href='data_add.php'">
-                    <i class="fas fa-plus"></i> Veri Ekle
-                </button>
-                <div id="target-element-id" style="margin-top: 1rem;">Veri durumu burada görünecek</div>
-            </div>
-
-            <div style="overflow-x: auto;">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Şube İsmi</th>
-                            <th>Mevcut Sıcaklık</th>
-                            <th>İstenilen Sıcaklık</th>
-                            <th>Aç/Kapat</th>
-                            <th>Tahmini Batarya Ömrü</th>
-                            <th>İşlemler</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <?php include 'get_data.php'; ?>
-                    </tbody>
-                </table>
-            </div>
-
-            <div class="button-group" style="margin-top: 1rem;">
-                <button onclick="exportData()">
-                    <i class="fas fa-file-export"></i> Verileri Dışa Aktar
-                </button>
-                <button onclick="showSettings()">
-                    <i class="fas fa-cog"></i> Ayarlar
-                </button>
+        
+        <div class="camera-feed">
+            <video id="camera-stream" autoplay muted playsinline style="width: 100%; max-width: 600px; margin: 0 auto; display: block;">
+                Your browser does not support the video tag.
+            </video>
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 20px;">
+                <div class="directional-arrows" style="width: 48%; display: flex; flex-direction: column; align-items: center;">
+                    <button class="arrow-button" onclick="moveCamera('up')">↑</button>
+                    <div class="arrow-row" style="margin-top: 10px;">
+                        <button class="arrow-button" onclick="moveCamera('left')">←</button>
+                        <button class="arrow-button" onclick="moveCamera('right')">→</button>
+                    </div>
+                    <button class="arrow-button" onclick="moveCamera('down')" style="margin-top: 10px;">↓</button>
+                </div>
+                <div class="joystick-container" style="width: 48%; display: flex; justify-content: center;">
+                    <div id="joystick">
+                        <div id="joystick-knob"></div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -69,7 +46,7 @@
                 <span id="datetime"></span>
             </div>
             <div class="footer-section">
-                <a href="https://www.azrsolution.net" target="_blank">© 2023 AZR Solution</a>
+                <a href="https://www.cevatozarpa.com" target="_blank">© 2023 Cevat ÖZARPA</a>
             </div>
             <div class="footer-section">
                 <a href="contact.html">İletişim</a>
@@ -89,6 +66,49 @@
 
         setInterval(updateDateTime, 1000); // Update every second
         updateDateTime(); // Initial call to set the date and time immediately
+
+        // JavaScript to set the camera feed source
+        const cameraStream = document.getElementById('camera-stream');
+        const cameraUrl = 'http://your-camera-ip-address/stream'; // Replace with the actual camera stream URL
+        cameraStream.src = cameraUrl;
+
+        // Joystick control logic
+        const joystick = document.getElementById('joystick');
+        const knob = document.getElementById('joystick-knob');
+        let isDragging = false;
+
+        joystick.addEventListener('mousedown', (e) => {
+            isDragging = true;
+        });
+
+        document.addEventListener('mousemove', (e) => {
+            if (isDragging) {
+                const rect = joystick.getBoundingClientRect();
+                const centerX = rect.left + rect.width / 2;
+                const centerY = rect.top + rect.height / 2;
+                const deltaX = e.clientX - centerX;
+                const deltaY = e.clientY - centerY;
+                const distance = Math.min(Math.sqrt(deltaX ** 2 + deltaY ** 2), 40); // Limit movement to 40px
+                const angle = Math.atan2(deltaY, deltaX);
+
+                knob.style.transform = `translate(${distance * Math.cos(angle)}px, ${distance * Math.sin(angle)}px)`;
+
+                // Send camera movement commands (e.g., via AJAX or WebSocket)
+                const normalizedX = (distance * Math.cos(angle)) / 40;
+                const normalizedY = (distance * Math.sin(angle)) / 40;
+                console.log('Camera move:', { x: normalizedX, y: normalizedY });
+            }
+        });
+
+        document.addEventListener('mouseup', () => {
+            isDragging = false;
+            knob.style.transform = 'translate(0, 0)'; // Reset knob position
+        });
+
+        function moveCamera(direction) {
+            console.log('Move camera:', direction);
+            // Add logic to send camera movement commands (e.g., via AJAX or WebSocket)
+        }
     </script>
 </body>
 </html>
